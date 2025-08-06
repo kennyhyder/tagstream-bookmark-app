@@ -1,16 +1,21 @@
-// API Route for saving bookmarks
-import { createClient } from '@supabase/supabase-js';
+// app/api/bookmarks/save/route.ts
 import { NextResponse } from 'next/server';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
-
 export async function POST(request: Request) {
-  const body = await request.json();
-  
-  // Your backend logic here (from backend tab)
-  
-  return NextResponse.json({ success: true });
+  try {
+    const body = await request.json();
+    
+    // For now, just return success
+    // We'll add Supabase after deployment
+    return NextResponse.json({ 
+      success: true,
+      message: 'Bookmark endpoint ready',
+      received: body 
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: 'Invalid request' },
+      { status: 400 }
+    );
+  }
 }
