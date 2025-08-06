@@ -1,5 +1,50 @@
-// app/page.tsx
+'use client';
+import { useState } from 'react';
+
 export default function Home() {
+  const [url, setUrl] = useState('');
+  const [saved, setSaved] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSave = async () => {
+    if (!url) return;
+    
+    setLoading(true);
+    try {
+      // For now, save locally
+      const newBookmark = {
+        url: url,
+        title: new URL(url).hostname,
+        savedAt: new Date().toISOString()
+      };
+      
+      // Save to localStorage for now
+      const existing = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+      existing.unshift(newBookmark);
+      localStorage.setItem('bookmarks', JSON.stringify(existing));
+      
+      setSaved(existing.map((b: any) => b.url));
+      setUrl('');
+      
+      // Optional: Call your API
+      await fetch('/api/bookmarks/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+    } catch (error) {
+      console.error('Error saving bookmark:', error);
+    }
+    setLoading(false);
+  };
+
+  // Load saved bookmarks on mount
+  useState(() => {
+    const existing = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+    setSaved(existing.map((b: any) => b.url));
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
       <header className="p-6 border-b border-white/10">
@@ -10,20 +55,10 @@ export default function Home() {
       </header>
       
       <main className="max-w-7xl mx-auto p-6">
-        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 text-center">
+        {/* Quick Save Section */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-xl p-8 mb-8">
           <h2 className="text-2xl font-semibold text-white mb-4">
-            Welcome to TagStream
+            Quick Save
           </h2>
-          <p className="text-white/80 mb-6">
-            Save bookmarks from Twitter, Instagram, and any website
-          </p>
-          <div className="space-y-4">
-            <button className="px-6 py-3 bg-white text-purple-900 rounded-lg font-semibold hover:scale-105 transition">
-              Get Started
-            </button>
-          </div>
-        </div>
-      </main>
-    </div>
-  );
-}
+          <div className="flex gap-3">
+            <inpu
