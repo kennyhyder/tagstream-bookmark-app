@@ -1,43 +1,62 @@
-'use client';
-import { useState } from 'react';
-
 export default function Home() {
-  const [url, setUrl] = useState('');
-  const [saved, setSaved] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = async () => {
-    if (!url) return;
-    
-    setLoading(true);
-    try {
-      const newBookmark = {
-        url: url,
-        title: new URL(url).hostname,
-        savedAt: new Date().toISOString()
-      };
-      
-      const existing = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-      existing.unshift(newBookmark);
-      localStorage.setItem('bookmarks', JSON.stringify(existing));
-      
-      setSaved(existing.map((b: any) => b.url));
-      setUrl('');
-      
-      await fetch('/api/bookmarks/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url })
-      });
-      
-    } catch (error) {
-      console.error('Error saving bookmark:', error);
-    }
-    setLoading(false);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-black">
-      <header className="p-6 border-b border-white/10">
-        <div className="max-w-7xl mx-auto">
-          <h1 className
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '2rem',
+      color: 'white',
+      fontFamily: 'system-ui, sans-serif'
+    }}>
+      <h1 style={{ fontSize: '3rem', fontWeight: 'bold', marginBottom: '2rem' }}>
+        TagStream
+      </h1>
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
+        padding: '2rem',
+        borderRadius: '1rem',
+        marginBottom: '2rem'
+      }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>
+          Bookmark Manager
+        </h2>
+        <p style={{ opacity: 0.9 }}>
+          Save and organize your favorite links
+        </p>
+      </div>
+      <div style={{
+        background: 'rgba(255, 255, 255, 0.1)',
+        backdropFilter: 'blur(10px)',
+        padding: '2rem',
+        borderRadius: '1rem'
+      }}>
+        <input 
+          type="url"
+          placeholder="Paste a URL to save..."
+          style={{
+            width: '100%',
+            padding: '1rem',
+            fontSize: '1rem',
+            borderRadius: '0.5rem',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            background: 'rgba(255, 255, 255, 0.1)',
+            color: 'white'
+          }}
+        />
+        <button style={{
+          marginTop: '1rem',
+          padding: '1rem 2rem',
+          fontSize: '1rem',
+          fontWeight: 'bold',
+          borderRadius: '0.5rem',
+          border: 'none',
+          background: 'white',
+          color: '#667eea',
+          cursor: 'pointer'
+        }}>
+          Save Bookmark
+        </button>
+      </div>
+    </div>
+  );
+}
